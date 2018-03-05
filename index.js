@@ -21,12 +21,27 @@ var isWindows = function () {
   return /^win/.test(process.platform)
 }
 
+var isLinux = function () {
+  return /^linux/.test(process.platform)
+}
+
+var isMac = function () {
+  return /^darwin/.test(process.platform)
+}
+
 var windowsFlags = function (tempDir) {
   return [
     '-app', path.join(slimerDir(), '/application.ini'),
     '-profile', path.join(tempDir, '/slimerjs-profile'),
     '-attach-console',
     '-no-remote'
+  ]
+}
+
+var linuxFlags = function (tempDir) {
+  return [
+    '--headless',
+    '--debug=true'
   ]
 }
 
@@ -56,6 +71,7 @@ var SlimerJSBrowser = function (baseBrowserDecorator, config, args) {
     fs.writeFileSync(captureFile, captureCode)
 
     if (isWindows()) flags = flags.concat(windowsFlags(this._tempDir))
+    if (isLinux() || isMac()) flags = flags.concat(linuxFlags(this._tempDir))
     flags = flags.concat(captureFile)
 
     // Start SlimerJS
